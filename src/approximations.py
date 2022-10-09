@@ -1,9 +1,7 @@
 from scipy import signal, special
 import numpy as np
 from src.designconfiguration import *
-from src.ui.mainwindow import *
 
-#TODO hacer algo para que se vea el orden
 def Butterworth(designconfig):
     Ap, Aa = designconfig.getNormalAttenuations()
 
@@ -22,7 +20,7 @@ def Butterworth(designconfig):
 
     p = setMaxQ(designconfig.qmax, p)
 
-    return z, p, k
+    return z, p, k, N
 
 
 def ChebyshevI(designconfig):
@@ -43,7 +41,7 @@ def ChebyshevI(designconfig):
 
     p = setMaxQ(designconfig.qmax, p)
 
-    return z, p, k
+    return z, p, k, N
 
 
 def ChebyshevII(designconfig):
@@ -64,7 +62,7 @@ def ChebyshevII(designconfig):
 
     p = setMaxQ(designconfig.qmax, p)
 
-    return z, p, k
+    return z, p, k, N
 
 
 def Bessel(designconfig):
@@ -97,7 +95,7 @@ def Bessel(designconfig):
 
     p = setMaxQ(designconfig.qmax, p)
 
-    return z, p, k
+    return z, p, k, n
 
 
 def Cauer(designconfig):
@@ -118,7 +116,7 @@ def Cauer(designconfig):
 
     p = setMaxQ(designconfig.qmax, p)
 
-    return z, p, k
+    return z, p, k, N
 
 
 def Gauss(designconfig):
@@ -153,7 +151,7 @@ def Gauss(designconfig):
 
     p = setMaxQ(designconfig.qmax, p)
 
-    return z, p, k
+    return z, p, k, n
 
 
 def gauss_poly(n, tau):
@@ -233,7 +231,7 @@ def Legendre(designconfig):
 
     p = setMaxQ(designconfig.qmax, p)
 
-    return z, p, k
+    return z, p, k, n
 
 def sumprod(a, p):
     a_p = []

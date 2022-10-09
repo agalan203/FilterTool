@@ -88,13 +88,13 @@ class DesignConfig:
             txt += 'Máximo Ripple:\n'
             txt += 'Banda de Atenuación (Aa):\n'
             if w_band:
-                txt += 'Frecuencia fp+:\n'
-                txt += 'Frecuencia fp-:\n'
-                txt += 'Frecuencia fa+:\n'
-                txt += 'Frecuencia fa-:\n'
+                txt += 'Frecuencia fp+ [Hz]:\n'
+                txt += 'Frecuencia fp- [Hz]:\n'
+                txt += 'Frecuencia fa+ [Hz]:\n'
+                txt += 'Frecuencia fa- [Hz]:\n'
             else:
-                txt += 'Frecuencia fp:\n'
-                txt += 'Frecuencia fa:\n'
+                txt += 'Frecuencia fp [Hz]:\n'
+                txt += 'Frecuencia fa [Hz]:\n'
         else:
             txt += 'Retardo en Banda de Paso [𝜏(0)]:\n'
             txt += 'Frecuencia [ωRG]:\n'

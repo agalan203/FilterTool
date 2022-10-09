@@ -125,7 +125,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     #Functions
     def saveFile(self):
         self.filter_design.setFilterStages(self.filter_stages) #TODO
-        filename = QFileDialog.getSaveFileName(self, "Guardar Archivo", "filter.ft", "Filter Tool (*.ft)", "Filter Tool (*.ft)")[0]
+        filename = QFileDialog.getSaveFileName(self, "Guardar Archivo", "filtro.ft", "Filter Tool (*.ft)", "Filter Tool (*.ft)")[0]
         if len(filename) > 0:
             try:
                 self.filter_design.save(filename)
@@ -258,8 +258,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.label_wa_2.setEnabled(w_band)
             self.spin_wa_2.setEnabled(w_band)
 
-            self.label_wp.setText('Frecuencia fp+' if w_band else 'Frecuencia fp')
-            self.label_wa.setText('Frecuencia fa+' if w_band else 'Frecuencia fa')
+            self.label_wp.setText('Frecuencia fp+ [Hz]' if w_band else 'Frecuencia fp [Hz]')
+            self.label_wa.setText('Frecuencia fa+ [Hz]' if w_band else 'Frecuencia fa [Hz]')
         else:
             self.set_GD_Template()
 
@@ -348,20 +348,21 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             # Aproximation
             # Falta el tema del orden min max, max q, etc #TODO checkear esto
             if aprox == 'Butterworth':
-                z, p, k = Butterworth(designconfig)
+                z, p, k, n = Butterworth(designconfig)
             elif aprox == 'Chebyshev':
-                z, p, k = ChebyshevI(designconfig)
+                z, p, k, n = ChebyshevI(designconfig)
             elif aprox == 'Chebyshev Inverso':
-                z, p, k = ChebyshevII(designconfig)
+                z, p, k, n = ChebyshevII(designconfig)
             elif aprox == 'Bessel':
-                z, p, k = Bessel(designconfig)
+                z, p, k, n = Bessel(designconfig)
             elif aprox == 'Cauer':
-                z, p, k = Cauer(designconfig)
+                z, p, k, n = Cauer(designconfig)
             elif aprox == 'Gauss':
-                z, p, k = Gauss(designconfig)
+                z, p, k, n = Gauss(designconfig)
             elif aprox == 'Legendre':
-                z, p, k = Legendre(designconfig)
+                z, p, k, n = Legendre(designconfig)
 
+            self.label_writeorden.setText(str(n))
             try:
                 if Ap <= 0:
                     k *= 10**(self.filter_design.gain / 20)
