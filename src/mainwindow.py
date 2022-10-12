@@ -124,7 +124,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     #Functions
     def saveFile(self):
-        self.filter_design.setFilterStages(self.filter_stages) #TODO
+        self.filter_design.setFilterStages(self.filter_stages)
         filename = QFileDialog.getSaveFileName(self, "Guardar Archivo", "filtro.ft", "Filter Tool (*.ft)", "Filter Tool (*.ft)")[0]
         if len(filename) > 0:
             try:
@@ -146,7 +146,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         if reply == QMessageBox.Yes:
             filename = QFileDialog.getOpenFileName(self, "Abrir Archivo", "", "Filter Tool (*.ft)", "Filter Tool (*.ft)")[0]
             if filename:
-                try:
+                #try:
                     self.filter_design.open(filename)
                     self.designconfig = self.filter_design.dc
                     self.combo_tipo.setCurrentIndex(self.designconfig.type)
@@ -184,13 +184,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         self.combo_cero1.model().item(stage.zero2 + 1).setEnabled(False)
                         self.combo_cero2.model().item(stage.zero2 + 1).setEnabled(False)
                     self.label_gain_total.setText('Restante: {:.3f} dB'.format(self.gain_remaining))
-                except:
-                    msg = QMessageBox()
-                    msg.setIcon(QMessageBox.Critical)
-                    msg.setWindowTitle("Error")
-                    msg.setText("Error abriendo el archivo")
-                    msg.exec_()
-                return True
+                    '''except:
+                        msg = QMessageBox()
+                        msg.setIcon(QMessageBox.Critical)
+                        msg.setWindowTitle("Error")
+                        msg.setText("Error abriendo el archivo")
+                        msg.exec_()
+                    return True'''
         return False
 
     def exportFile(self):
@@ -590,8 +590,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def newStage(self):
         new_stage = self.getStageParameters()
         if new_stage is not None:
-            self.stage_list.addItem(new_stage.getLabel())
-            self.filter_stages[new_stage.getLabel()] = new_stage
+            self.stage_list.addItem(new_stage.getLabel(self.filter_design))
+            self.filter_stages[new_stage.getLabel(self.filter_design)] = new_stage
             return True
         return False
 
@@ -612,13 +612,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         msg.setIcon(QMessageBox.Warning)
         msg.setWindowTitle("Advertencia")
         if pole1 == pole2 and pole1 >= 0:
-            msg.setText("Ambos polos deben ser distintos.")
+            msg.setText("Los polos deben ser distintos.")
             msg.exec_()
         elif zero1 == zero2 and zero1 >= 0:
-            msg.setText("Ambos ceros deben ser distintos.")
+            msg.setText("Los ceros deben ser distintos.")
             msg.exec_()
         elif pole1 == pole2 and zero1 == zero2 and pole1 < 0 and zero1 < 0:
-            msg.setText("Se debe seleccionar al menos un polo o un cero.")
+            msg.setText("Seleccionar al menos un polo o un cero.")
             msg.exec_()
         elif pole1 >= 0 and pole2 >= 0 and not np.isclose(self.filter_design.poles[pole1].real, self.filter_design.poles[pole2].real):
             print(self.filter_design.poles[pole1].real, self.filter_design.poles[pole2].real)
@@ -709,8 +709,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
                 index = self.editingStageIndex
                 del self.filter_stages[self.stage_list.item(index).text()]
-                self.stage_list.item(index).setText(new_stage.getLabel())
-                self.filter_stages[new_stage.getLabel()] = new_stage
+                self.stage_list.item(index).setText(new_stage.getLabel(self.filter_design))
+                self.filter_stages[new_stage.getLabel(self.filter_design)] = new_stage
                 return True
             else:
                 return False
@@ -733,10 +733,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 zeros.append(self.filter_design.zeros[stage.zero2])
 
             Gain = signal.bode(signal.ZerosPolesGain(zeros, poles, 10**(stage.gain/20)))
+            freq = Gain[0] / (2* pi)
 
             self.getPlotAxes('Respuesta Etapa').clear()
             self.getPlotAxes('Respuesta Etapa').grid()
-            self.getPlotAxes('Respuesta Etapa').semilogx(Gain[0], Gain[1], 'k')
+            self.getPlotAxes('Respuesta Etapa').semilogx(freq, Gain[1], 'k')
             self.axes2[2].set_xlabel('Frecuencia [Hz]')
             self.axes2[2].set_ylabel('Amplitud [dB]')
             self.figure2[2].tight_layout()

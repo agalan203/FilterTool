@@ -1,5 +1,5 @@
-from src.designconfiguration import *
 from src.filterstage import *
+from src.designconfiguration import *
 from src.approximations import *
 
 from matplotlib.backends.backend_pdf import PdfPages
@@ -28,7 +28,7 @@ class FilterDesign:
 
     def save(self, filename):
         with open(filename, "w") as f:
-            f.write('# TC2022: Filter Tool\n')
+            f.write('# TC 2022 - Grupo 1: Filter Tool\n')
 
             f.write('Design Configuration\n')
             if self.dc != None:
@@ -36,11 +36,6 @@ class FilterDesign:
 
             f.write('Gain\n')
             f.write('{}\n'.format(self.gain))
-
-            f.write('FilterStages\n')
-            if self.stages != None:
-                for stage in self.stages.values():
-                    f.write(str(stage))
 
             f.write('Poles\n')
             if len(self.poles) > 0:
@@ -54,6 +49,12 @@ class FilterDesign:
                     f.write(str(z))
                     f.write('\n')
 
+            f.write('FilterStages\n')
+            if self.stages != None:
+                for stage in self.stages.values():
+                    f.write(str(stage))
+
+                    
     def open(self, filename):
         with open(filename, "r") as f:
             lines = f.readlines()
@@ -70,10 +71,10 @@ class FilterDesign:
             Ap = float(lines[i + 7])
             ripple = float(lines[i + 8])
             Aa = float(lines[i + 9])
-            wp = float(lines[i + 10]) * 2 * pi
-            wa = float(lines[i + 11]) * 2 * pi
-            wp2 = float(lines[i + 12]) * 2 * pi
-            wa2 = float(lines[i + 13]) * 2 * pi
+            wp = float(lines[i + 10])
+            wa = float(lines[i + 11])
+            wp2 = float(lines[i + 12])
+            wa2 = float(lines[i + 13])
             tau = float(lines[i + 14])
             wrg = float(lines[i + 15])
             gamma = int(lines[i + 16])
@@ -86,10 +87,22 @@ class FilterDesign:
             i += 1
             self.gain = float(lines[i])
 
-            while lines[i] != 'FilterStages': i += 1
+            while lines[i] != 'Poles': i += 1
+            i += 1
+            self.poles = list()
+            while lines[i] != 'Zeros':
+                self.poles.append(complex(lines[i]))
+                i += 1
+
+            i += 1
+            self.zeros = list()
+            while lines[i] != 'FilterStages':
+                self.zeros.append(complex(lines[i]))
+                i += 1
+                
             i += 1
             self.stages = dict()
-            while lines[i] != 'Poles':
+            while i < len(lines) and len(lines[i]) > 0: #TODO que las stages vayan al final
                 pole1 = int(lines[i])
                 pole2 = int(lines[i + 1])
                 zero1 = int(lines[i + 2])
@@ -97,17 +110,8 @@ class FilterDesign:
                 gain = float(lines[i + 4])
                 Q = float(lines[i + 5])
                 new_stage = FilterStage(pole1, pole2, zero1, zero2, gain, Q)
-                self.stages[new_stage.getLabel()] = new_stage
+                self.stages[new_stage.getLabel(self)] = new_stage
                 i += 6
-            i += 1
-            self.poles = list()
-            while lines[i] != 'Zeros':
-                self.poles.append(complex(lines[i]))
-                i += 1
-            i += 1
-            while i < len(lines) and len(lines[i]) > 0:
-                self.zeros.append(complex(lines[i]))
-                i += 1
         return
 
     def export(self, filename):
@@ -222,19 +226,19 @@ class FilterDesign:
             # Calcular aproximación
             # TODO: Falta el tema del orden min max, max q, etc 
             if aprox == 'Butterworth':
-                z, p, k = Butterworth(self.dc)
+                z, p, k, n = Butterworth(self.dc)
             elif aprox == 'Chebyshev I':
-                z, p, k = ChebyshevI(self.dc)
+                z, p, k, n = ChebyshevI(self.dc)
             elif aprox == 'Chebyshev II':
-                z, p, k = ChebyshevI(self.dc)
+                z, p, k, n = ChebyshevI(self.dc)
             elif aprox == 'Bessel':
-                z, p, k = Bessel(self.dc)
+                z, p, k, n = Bessel(self.dc)
             elif aprox == 'Cauer':
-                z, p, k = Cauer(self.dc)
+                z, p, k, n = Cauer(self.dc)
             elif aprox == 'Gauss':
-                z, p, k = Gauss(self.dc)
+                z, p, k, n = Gauss(self.dc)
             elif aprox == 'Legendre':
-                z, p, k = Legendre(self.dc)
+                z, p, k, n = Legendre(self.dc)
 
             if Ap <= 0:
                 k *= 10 ** (self.gain / 20)

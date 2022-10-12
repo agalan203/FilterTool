@@ -10,6 +10,7 @@ def Butterworth(designconfig):
                    'Rechaza Banda': 'bandstop'}
     if type == 'Pasa Bajos' or type == 'Pasa Altos':
         N, Wn = signal.buttord(designconfig.wp, designconfig.wa, Ap, Aa, True)
+        Wn = gradNorm(approx="butter", freqs=[designconfig.wp, designconfig.wa],A=[designconfig.Ap,designconfig.Aa],btype=signaltypes[type],wn=Wn,N=N,desnorm=designconfig.denorm/100)
     elif type == 'Pasa Banda' or type == 'Rechaza Banda':
         N, Wn = signal.buttord([designconfig.wp2, designconfig.wp], [designconfig.wa2, designconfig.wa], Ap, Aa, True)
     else:
@@ -31,6 +32,8 @@ def ChebyshevI(designconfig):
                    'Rechaza Banda': 'bandstop'}
     if type == 'Pasa Bajos' or type == 'Pasa Altos':
         N, Wn = signal.cheb1ord(designconfig.wp, designconfig.wa, Ap, Aa, True)
+        if type == 'Pasa Bajos':
+            Wn = gradNorm(approx='cheby1', freqs=[designconfig.wp, designconfig.wa],A=[designconfig.Ap,designconfig.Aa],btype=signaltypes[type],wn=Wn,N=N,desnorm=designconfig.denorm/100)
     elif type == 'Pasa Banda' or type == 'Rechaza Banda':
         N, Wn = signal.cheb1ord([designconfig.wp2, designconfig.wp], [designconfig.wa2, designconfig.wa], Ap, Aa, True)
     else:
@@ -106,6 +109,8 @@ def Cauer(designconfig):
                    'Rechaza Banda': 'stop'}
     if type == 'Pasa Bajos' or type == 'Pasa Altos':
         N, Wn = signal.ellipord(designconfig.wp, designconfig.wa, Ap, Aa, True)
+        if type == 'Pasa Bajos':
+            Wn = gradNorm(approx='ellip', freqs=[designconfig.wp, designconfig.wa],A=[designconfig.Ap,designconfig.Aa],btype=signaltypes[type],wn=Wn,N=N,desnorm=designconfig.denorm/100)
     elif type == 'Pasa Banda' or type == 'Rechaza Banda':
         N, Wn = signal.ellipord([designconfig.wp2, designconfig.wp], [designconfig.wa2, designconfig.wa], Ap, Aa, True)
     else:
@@ -336,3 +341,43 @@ def setMaxQ(maxQ, poles):
             poles[i] = xs[value] + 1j*ys[value]
 
     return poles
+
+def gradNorm(approx, freqs, A, btype, wn, N, desnorm): #approx = "butter", "cheby1", "ellip"; freqs = [wp,wa]; A = [Ap, Aa]; btype = ‘lowpass’, ‘highpass’, ‘bandpass’, ‘bandstop’; N = orden
+    w = calcW(w=np.array(freqs), filter_type=btype)
+    
+    if approx == "butter":
+        wc_min = w[0] * (10**(A[0]/10) -  1)**(-1/(2*N))
+        wc_max = w[1] * (10**(A[1]/10) -  1)**(-1/(2*N))
+        wc_ = wc_min + desnorm* (wc_max-wc_min)
+
+    elif approx == "cheby1" or approx == "ellip":
+
+        if approx == "cheby1": 
+            a, b = signal.cheby1(N, A[0], Wn=1, analog = True, output='ba')
+        if approx == "ellip": 
+            a, b = signal.ellip(N, A[0], A[1], Wn=1, analog = True, output='ba')
+
+        H_norm = signal.TransferFunction(a, b)
+        wa=freqs[1]
+        w_values, mag_values, _ = signal.bode(H_norm, w=np.linspace(1, max(wa, 1/wa), num=100000))
+        wx = [ w for w, mag in zip(w_values, mag_values) if mag <= (-A[1])]      # wa/wc
+
+        wc_a = w[1] / wx[0]
+        wc_ = wn + (wc_a - wn) * desnorm
+
+    else:
+        wc_ = wn
+
+    if (btype == 'highpass'):
+        wc_ = 1/wc_
+
+    return wc_ 
+
+def calcW(w,filter_type):
+    if filter_type == 'highpass':
+        w = [ 1/w[0], 1/w[1] ]
+    elif filter_type == 'bandpass':
+        w = [ w[0][1] - w[0][0], w[1][1] - w[1][0] ]   # [ (wp+ - wp-), (wa+ - wa-) ]
+    elif filter_type == 'bandstop':
+        w = [ w[1][1] - w[1][0], w[0][1] - w[0][0] ]   # [ (wa+ - wa-), (wp+ - wp-) ]
+    return w

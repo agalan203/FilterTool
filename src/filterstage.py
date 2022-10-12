@@ -1,3 +1,6 @@
+#from src.filterdesign import *
+from scipy import signal
+
 class FilterStage:
     def __init__(self, p1 = -1, p2 = -1, z1 = -1, z2 = -1, g = -1, Q = -1):
         self.pole1 = p1
@@ -14,7 +17,7 @@ class FilterStage:
     def getPoles(self):
         return self.pole1, self.pole2
 
-    def getLabel(self):
+    def getLabel(self, filterdesign):
         pole_text = ''
         zero_text = ''
         if self.pole1 < 0:
@@ -30,8 +33,26 @@ class FilterStage:
             zero_text = ' Cero n°{}\n'.format(self.zero1+1)
         else:
             zero_text = ' Cero n°{}, Cero n°{}\n'.format(self.zero1+1, self.zero2+1)
+        
+        poles = []
+        zeros = []
+        if self.pole1 >= 0:
+            poles.append(filterdesign.poles[self.pole1])
+        if self.pole2 >= 0:
+            poles.append(filterdesign.poles[self.pole2])
 
-        return '{}{} Ganancia = {:.3f} dB\n Q = {:.3f}'.format(pole_text, zero_text, self.gain, self.Q)
+        if self.zero1 >= 0:
+            zeros.append(filterdesign.zeros[self.zero1])
+        if self.zero2 >= 0:
+            zeros.append(filterdesign.zeros[self.zero2])
+
+        num, denom = signal.zpk2tf(zeros, poles, 10**(filterdesign.gain/20))
+        rightnum = ",".join((map("{:.3f}".format, num)))
+        rightdenom = ",".join(map("{:.3f}".format, denom))
+        num_text = 'Numerador = [{}]\n'.format(rightnum)
+        denom_text = ' Denominador = [{}]\n'.format(rightdenom)
+
+        return '{}{} Ganancia = {:.3f} dB\n Q = {:.3f}\n {}{}'.format(pole_text, zero_text, self.gain, self.Q, num_text, denom_text)
 
     def __str__(self):
         return '{}\n{}\n{}\n{}\n{}\n{}\n'.format(self.pole1, self.pole2, self.zero1, self.zero2, self.gain, self.Q)
