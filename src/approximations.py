@@ -8,18 +8,24 @@ def Butterworth(designconfig):
     type = designconfig.getType()
     signaltypes = {'Pasa Bajos': 'lowpass', 'Pasa Altos': 'highpass', 'Pasa Banda': 'bandpass',
                    'Rechaza Banda': 'bandstop'}
-    if type == 'Pasa Bajos' or type == 'Pasa Altos':
-        N, Wn = signal.buttord(designconfig.wp, designconfig.wa, Ap, Aa, True)
-        Wn = gradNorm(approx="butter", freqs=[designconfig.wp, designconfig.wa],A=[designconfig.Ap,designconfig.Aa],btype=signaltypes[type],wn=Wn,N=N,desnorm=designconfig.denorm/100)
-    elif type == 'Pasa Banda' or type == 'Rechaza Banda':
-        N, Wn = signal.buttord([designconfig.wp2, designconfig.wp], [designconfig.wa2, designconfig.wa], Ap, Aa, True)
+
+    if  type == 'Pasa Bajos' or type == 'Pasa Altos' or type == 'Pasa Banda' or type == 'Rechaza Banda':
+        w = [designconfig.wp, designconfig.wa]  #original, pedida por el usuario
+        wNa = [1, WtoLP(w, btype=signaltypes[type])] #obtengo waN normalizada, wp es igual a 1
+        N, Wn = signal.buttord(wNa[0], wNa[1], Ap, Aa, True) #consigo grado y frecuencia 
+        #Esta parte de gradNorm no la toque porque interpreté que es la desnormalización
+        Wn = gradNorm(approx="butter", freqs=wNa,A=[designconfig.Ap,designconfig.Aa],btype=signaltypes[type],wn=Wn,N=N,desnorm=designconfig.denorm/100) 
+
     else:
         return [[], [], 0]
+  
     N = max(min(N, designconfig.maxord), designconfig.minord)
 
-    z, p, k = signal.butter(N, Wn, btype=signaltypes[type], analog=True, output='zpk')
+    z, p, k = signal.butter(N, Wn,'lowpass', analog=True, output='zpk') #consigue la función transferencia del pasa bajos normalizado
 
     p = setMaxQ(designconfig.qmax, p)
+
+    z,p,k = transforFilter (z,p,k,w,type) #Transforma al filtro correspondiente
 
     return z, p, k, N
 
@@ -30,21 +36,28 @@ def ChebyshevI(designconfig):
     type = designconfig.getType()
     signaltypes = {'Pasa Bajos': 'lowpass', 'Pasa Altos': 'highpass', 'Pasa Banda': 'bandpass',
                    'Rechaza Banda': 'bandstop'}
-    if type == 'Pasa Bajos' or type == 'Pasa Altos':
-        N, Wn = signal.cheb1ord(designconfig.wp, designconfig.wa, Ap, Aa, True)
-        if type == 'Pasa Bajos':
-            Wn = gradNorm(approx='cheby1', freqs=[designconfig.wp, designconfig.wa],A=[designconfig.Ap,designconfig.Aa],btype=signaltypes[type],wn=Wn,N=N,desnorm=designconfig.denorm/100)
-    elif type == 'Pasa Banda' or type == 'Rechaza Banda':
-        N, Wn = signal.cheb1ord([designconfig.wp2, designconfig.wp], [designconfig.wa2, designconfig.wa], Ap, Aa, True)
+
+    if  type == 'Pasa Bajos' or type == 'Pasa Altos' or type == 'Pasa Banda' or type == 'Rechaza Banda':
+        w = [designconfig.wp, designconfig.wa]  #original, pedida por el usuario
+        wNa = [1, WtoLP(w, btype=signaltypes[type])] #obtengo waN normalizada, wp es igual a 1
+        N, Wn = signal.cheb1ord(wNa[0], wNa[1], Ap, Aa, True) #consigo grado y frecuencia 
+        #Esta parte de gradNorm no la toque porque interpreté que es la desnormalización
+        Wn = gradNorm(approx="cheby1", freqs=wNa,A=[designconfig.Ap,designconfig.Aa],btype=signaltypes[type],wn=Wn,N=N,desnorm=designconfig.denorm/100) 
+
     else:
         return [[], [], 0]
+  
     N = max(min(N, designconfig.maxord), designconfig.minord)
 
-    z, p, k = signal.cheby1(N, Ap, Wn, btype=signaltypes[type], analog=True, output='zpk')
+    z, p, k = signal.cheby1(N, Wn,'lowpass', analog=True, output='zpk') #consigue la función transferencia del pasa bajos normalizado
 
     p = setMaxQ(designconfig.qmax, p)
 
+    z,p,k = transforFilter (z,p,k,w,type) #Transforma al filtro correspondiente
+
     return z, p, k, N
+
+
 
 
 def ChebyshevII(designconfig):
@@ -53,19 +66,27 @@ def ChebyshevII(designconfig):
     type = designconfig.getType()
     signaltypes = {'Pasa Bajos': 'lowpass', 'Pasa Altos': 'highpass', 'Pasa Banda': 'bandpass',
                    'Rechaza Banda': 'bandstop'}
-    if type == 'Pasa Bajos' or type == 'Pasa Altos':
-        N, Wn = signal.cheb2ord(designconfig.wp, designconfig.wa, Ap, Aa, True)
-    elif type == 'Pasa Banda' or type == 'Rechaza Banda':
-        N, Wn = signal.cheb2ord([designconfig.wp2, designconfig.wp], [designconfig.wa2, designconfig.wa], Ap, Aa, True)
+
+    if  type == 'Pasa Bajos' or type == 'Pasa Altos' or type == 'Pasa Banda' or type == 'Rechaza Banda':
+        w = [designconfig.wp, designconfig.wa]  #original, pedida por el usuario
+        wNa = [1, WtoLP(w, btype=signaltypes[type])] #obtengo waN normalizada, wp es igual a 1
+        N, Wn = signal.cheb2ord(wNa[0], wNa[1], Ap, Aa, True) #consigo grado y frecuencia 
+        #Esta parte de gradNorm no la toque porque interpreté que es la desnormalización
+        Wn = gradNorm(approx="cheby2", freqs=wNa,A=[designconfig.Ap,designconfig.Aa],btype=signaltypes[type],wn=Wn,N=N,desnorm=designconfig.denorm/100) 
+
     else:
         return [[], [], 0]
+  
     N = max(min(N, designconfig.maxord), designconfig.minord)
 
-    z, p, k = signal.cheby2(N, Ap, Wn, btype=signaltypes[type], analog=True, output='zpk')
+    z, p, k = signal.cheby2(N, Wn,'lowpass', analog=True, output='zpk') #consigue la función transferencia del pasa bajos normalizado
 
     p = setMaxQ(designconfig.qmax, p)
 
+    z,p,k = transforFilter (z,p,k,w,type) #Transforma al filtro correspondiente
+
     return z, p, k, N
+
 
 
 def Bessel(designconfig):
@@ -105,23 +126,29 @@ def Cauer(designconfig):
     Ap, Aa = designconfig.getNormalAttenuations()
 
     type = designconfig.getType()
-    signaltypes = {'Pasa Bajos': 'low', 'Pasa Altos': 'high', 'Pasa Banda': 'pass',
-                   'Rechaza Banda': 'stop'}
-    if type == 'Pasa Bajos' or type == 'Pasa Altos':
-        N, Wn = signal.ellipord(designconfig.wp, designconfig.wa, Ap, Aa, True)
-        if type == 'Pasa Bajos':
-            Wn = gradNorm(approx='ellip', freqs=[designconfig.wp, designconfig.wa],A=[designconfig.Ap,designconfig.Aa],btype=signaltypes[type],wn=Wn,N=N,desnorm=designconfig.denorm/100)
-    elif type == 'Pasa Banda' or type == 'Rechaza Banda':
-        N, Wn = signal.ellipord([designconfig.wp2, designconfig.wp], [designconfig.wa2, designconfig.wa], Ap, Aa, True)
+    signaltypes = {'Pasa Bajos': 'lowpass', 'Pasa Altos': 'highpass', 'Pasa Banda': 'bandpass',
+                   'Rechaza Banda': 'bandstop'}
+
+    if  type == 'Pasa Bajos' or type == 'Pasa Altos' or type == 'Pasa Banda' or type == 'Rechaza Banda':
+        w = [designconfig.wp, designconfig.wa]  #original, pedida por el usuario
+        wNa = [1, WtoLP(w, btype=signaltypes[type])] #obtengo waN normalizada, wp es igual a 1
+        N, Wn = signal.ellipord(wNa[0], wNa[1], Ap, Aa, True) #consigo grado y frecuencia 
+        #Esta parte de gradNorm no la toque porque interpreté que es la desnormalización
+        Wn = gradNorm(approx="cheby1", freqs=wNa,A=[designconfig.Ap,designconfig.Aa],btype=signaltypes[type],wn=Wn,N=N,desnorm=designconfig.denorm/100) 
+
     else:
         return [[], [], 0]
+  
     N = max(min(N, designconfig.maxord), designconfig.minord)
 
-    z, p, k = signal.ellip(N, Ap, Aa, Wn, btype=signaltypes[type], analog=True, output='zpk')
+    z, p, k = signal.ellip(N, Wn,'lowpass', analog=True, output='zpk') #consigue la función transferencia del pasa bajos normalizado
 
     p = setMaxQ(designconfig.qmax, p)
 
+    z,p,k = transforFilter (z,p,k,w,type) #Transforma al filtro correspondiente
+
     return z, p, k, N
+
 
 
 def Gauss(designconfig):
@@ -381,3 +408,40 @@ def calcW(w,filter_type):
     elif filter_type == 'bandstop':
         w = [ w[1][1] - w[1][0], w[0][1] - w[0][0] ]   # [ (wa+ - wa-), (wp+ - wp-) ]
     return w
+
+#Función que pasa a un pasa bajos normalizado
+#Devuelve WaN del filtro pasa bajos normalizado
+#w: arreglo que contiene wa y wp originales del filtro
+def WtoLP (w, filter_type):    
+    
+    if filter_type == 'lowpass':
+        waN = w[1]/w[0]    # [Wa(normalizada) = Wa/wp] 
+    elif filter_type == 'highpass':
+        waN = w[0]/w[1]    # [Wa(normalizada) = wp/wa]
+    elif filter_type == 'bandpass':
+        waN = abs((w[1][1] - w[1][0]))/abs( (w[0][1] - w[0][0])) # [Wa(normalizada) = deltawa/deltawp]
+    elif filter_type == 'bandstop':
+        waN =  abs(((w[0][1] - w[0][0]))/ abs((w[1][1] - w[1][0]) ))# [Wa(normalizada) = deltawp/deltawa]
+    return waN
+
+#Función que transforma al filtro que se desea una vez que el pasa bajos está desnormalizado. 
+#Devuelve la transferencia. 
+#z,p,k: función transferencia del pasabajos
+#w: arreglo que contiene wa y wp originales del filtro
+def transforFilter (z,p,k,w, filter_type):   
+                                             
+    if filter_type == 'lowpass':
+        z, p, k = signal.lp2lp_zpk(z, p, k, w[0]) 
+    elif filter_type == 'highpass':
+        z, p, k = signal.lp2hp_zpk(z, p, k, w[0])
+    elif filter_type == 'bandpass' or filter_type == 'bandstop':
+        B = abs(w[0][0] - w[0][1])
+        w0 = np.sqrt(w[0][0]*w[0][1])
+        if filter_type == 'bandpass':
+            z, p, k = signal.lp2bp_zpk(z, p, k, w0, B)
+        elif filter_type == 'bandstop':
+            z, p, k = signal.lp2bs_zpk(z, p, k, w0, B)
+    else:
+        return [[], [], 0]
+    
+    return z,p,k
