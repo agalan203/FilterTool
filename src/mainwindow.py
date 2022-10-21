@@ -1,4 +1,4 @@
-from src.ui.mainwindow import *
+from src.ui.mainwindow2 import *
 import numpy as np
 from numpy import linspace, logspace, cos, sin, heaviside, log10, floor, zeros, ones, pi, diff, unwrap
 import sys
@@ -146,7 +146,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         if reply == QMessageBox.Yes:
             filename = QFileDialog.getOpenFileName(self, "Abrir Archivo", "", "Filter Tool (*.ft)", "Filter Tool (*.ft)")[0]
             if filename:
-                #try:
+                try:
                     self.filter_design.open(filename)
                     self.designconfig = self.filter_design.dc
                     self.combo_tipo.setCurrentIndex(self.designconfig.type)
@@ -184,13 +184,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         self.combo_cero1.model().item(stage.zero2 + 1).setEnabled(False)
                         self.combo_cero2.model().item(stage.zero2 + 1).setEnabled(False)
                     self.label_gain_total.setText('Restante: {:.3f} dB'.format(self.gain_remaining))
-                    '''except:
-                        msg = QMessageBox()
-                        msg.setIcon(QMessageBox.Critical)
-                        msg.setWindowTitle("Error")
-                        msg.setText("Error abriendo el archivo")
-                        msg.exec_()
-                    return True'''
+                except:
+                    msg = QMessageBox()
+                    msg.setIcon(QMessageBox.Critical)
+                    msg.setWindowTitle("Error")
+                    msg.setText("Error abriendo el archivo")
+                    msg.exec_()
+                return True
         return False
 
     def exportFile(self):
@@ -283,7 +283,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.designconfig.wp2 = self.spin_wp_2.value() * 2 * pi
         self.designconfig.wa2 = self.spin_wa_2.value() * 2 * pi
         self.designconfig.tau = self.GD_tau.value()
-        self.designconfig.wrg = self.GD_wrg.value()
+        self.designconfig.wrg = self.GD_wrg.value() * 2 * pi
         self.designconfig.gamma = self.GD_gamma.value()
 
     def plotAll(self, designconfig):
@@ -301,7 +301,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         wp2 = self.spin_wp_2.value() * 2 * pi
         wa2 = self.spin_wa_2.value() * 2 * pi
         tau = self.GD_tau.value()
-        wrg = self.GD_wrg.value()
+        wrg = self.GD_wrg.value() * 2 * pi
         gamma = self.GD_gamma.value()
 
         # Mensaje advertencia: Parametros invalidos
@@ -390,7 +390,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 # Retardo de Grupo
                 w, h = signal.freqs_zpk(z, p, k, x)
                 gd = -np.diff(np.unwrap(np.angle(h))) / np.diff(w)
-                self.getPlotAxes('Retardo de Grupo').semilogx(w[1:], gd, 'k')
+                freq = w[1:] / (2* pi)
+                self.getPlotAxes('Retardo de Grupo').semilogx(freq, gd, 'k')
 
                 # Polos y Ceros
                 self.stage_list.clear()
@@ -520,7 +521,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.axes[0].semilogx(x, y, '-', color='#28658a', linewidth=2)
             self.axes[0].fill_between(x, y, np.max(y), facecolor='#588aa8', alpha=0.5, edgecolor='#539ecd', linewidth=0)
         elif type == 'Retardo de Grupo':
-            x = [wrg/10, wrg, wrg]
+            x = [wrg/10/ (2*pi), wrg/ (2*pi), wrg/ (2*pi)]
             y = [tau - (tau * gamma/100), tau - (tau * gamma/100), 0]
             self.getPlotAxes('Retardo de Grupo').semilogx(x, y, '-', color='#28658a', linewidth=2)
             self.getPlotAxes('Retardo de Grupo').fill_between(x, y, np.min(y), facecolor='#588aa8', alpha=0.5, edgecolor='#539ecd', linewidth=0)

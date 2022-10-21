@@ -84,9 +84,9 @@ class DesignConfig:
         txt += 'Q Máximo:\n'
         w_band = self.filter_types[self.type] == 'Pasa Banda' or self.filter_types[self.type] == 'Rechaza Banda'
         if self.filter_types[self.type] != 'Retardo de Grupo':
-            txt += 'Banda de Paso (Ap):\n'
-            txt += 'Máximo Ripple:\n'
-            txt += 'Banda de Atenuación (Aa):\n'
+            txt += 'Banda de Paso (Ap) [dB]:\n'
+            txt += 'Máximo Ripple [dB]:\n'
+            txt += 'Banda de Atenuación (Aa) [dB]:\n'
             if w_band:
                 txt += 'Frecuencia fp+ [Hz]:\n'
                 txt += 'Frecuencia fp- [Hz]:\n'
@@ -96,9 +96,9 @@ class DesignConfig:
                 txt += 'Frecuencia fp [Hz]:\n'
                 txt += 'Frecuencia fa [Hz]:\n'
         else:
-            txt += 'Retardo en Banda de Paso [𝜏(0)]:\n'
-            txt += 'Frecuencia [ωRG]:\n'
-            txt += 'Retardo máximo en ωRG [𝛾%]:\n'
+            txt += 'Retardo en Banda de Paso [𝜏(0)] [s]:\n'
+            txt += 'Frecuencia [fRG] [Hz]:\n'
+            txt += 'Retardo máximo en fRG [𝛾%]:\n'
         return txt
 
     def export_values(self):
