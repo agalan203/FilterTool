@@ -6,6 +6,6 @@ if __name__ == "__main__":
     window.show()
     app.exec_()
 
-    #para multiples filtros ver FilterToolApp.py linea 110
-
-    #para multiples filtros: la Plantilla debe ser igual! y cambiar el color de polos y ceros
+    #maybe agrega lo de las imagenes de la plantilla de cada filtro
+    #arreglar lo de las stages
+    #ver pq tarda tanto 

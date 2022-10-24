@@ -2,6 +2,8 @@ from src.filterstage import *
 from src.designconfiguration import *
 from src.approximations import *
 
+import os
+
 from matplotlib.backends.backend_pdf import PdfPages
 import matplotlib.pyplot as plt
 import numpy as np
@@ -56,14 +58,16 @@ class FilterDesign:
 
                     
     def open(self, filename):
+        aprox_types = ['Butterworth', 'Chebyshev I', 'Chebyshev II', 'Bessel', 'Cauer', 'Legendre', 'Gauss']
         with open(filename, "r") as f:
+            name = os.path.splitext(os.path.basename(filename))[0]
             lines = f.readlines()
             for i in range(len(lines)):
                 lines[i] = lines[i].rstrip()
             i = 0
             while lines[i] != 'Design Configuration': i += 1
             type = int(lines[i + 1])
-            aprox = int(lines[i + 2])
+            aprox = str(lines[i + 2])
             denorm = int(lines[i + 3])
             minord = int(lines[i + 4])
             maxord = int(lines[i + 5])
@@ -80,7 +84,7 @@ class FilterDesign:
             gamma = int(lines[i + 16])
             i = i + 17
 
-            self.dc = DesignConfig(type, aprox, denorm, minord, maxord, qmax, Ap, ripple, Aa, wp, wa, wp2, wa2, tau,
+            self.dc = DesignConfig(name, type, aprox, denorm, minord, maxord, qmax, Ap, ripple, Aa, wp, wa, wp2, wa2, tau,
                                    wrg, gamma)
 
             while lines[i] != 'Gain': i += 1
@@ -102,7 +106,7 @@ class FilterDesign:
                 
             i += 1
             self.stages = dict()
-            while i < len(lines) and len(lines[i]) > 0: #TODO que las stages vayan al final
+            while i < len(lines) and len(lines[i]) > 0:
                 pole1 = int(lines[i])
                 pole2 = int(lines[i + 1])
                 zero1 = int(lines[i + 2])
@@ -110,7 +114,7 @@ class FilterDesign:
                 gain = float(lines[i + 4])
                 Q = float(lines[i + 5])
                 new_stage = FilterStage(pole1, pole2, zero1, zero2, gain, Q)
-                self.stages[new_stage.getLabel(self)] = new_stage
+                self.stages[new_stage.getLabel(self, name)] = new_stage 
                 i += 6
         return
 
@@ -137,7 +141,7 @@ class FilterDesign:
             plt.grid()
 
             self.gain = self.dc.ripple - self.dc.Ap
-            aprox = self.dc.aprox_types[self.dc.aprox]
+            aprox = self.dc.aprox
             denorm = self.dc.denorm
             minord = self.dc.minord
             maxord = self.dc.maxord
@@ -224,7 +228,6 @@ class FilterDesign:
                 plt.fill_between(x, y, np.max(y), facecolor='#588aa8', alpha=0.5, edgecolor='#539ecd', linewidth=0)
 
             # Calcular aproximación
-            # TODO: Falta el tema del orden min max, max q, etc 
             if aprox == 'Butterworth':
                 z, p, k, n = Butterworth(self.dc)
             elif aprox == 'Chebyshev I':

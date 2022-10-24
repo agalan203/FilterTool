@@ -221,7 +221,6 @@ def gauss_poly(n, tau):
         k = p[i] * k
     return z, p, k
 
-
 def Legendre(designconfig):
     Ap, Aa = designconfig.getNormalAttenuations()
 
@@ -309,7 +308,6 @@ def sumprod(a, p):
 
     return ps ** 2
 
-
 def get_L(n):
     # valor de k
     if n % 2 == 0:
@@ -354,7 +352,6 @@ def get_L(n):
 
     return integ(x_to_2w2m1) - integ(-1)
 
-
 def Legendre_poly(n, eps):
     poly = 1 + (eps**2) * get_L(n)
     p = []
@@ -370,7 +367,6 @@ def Legendre_poly(n, eps):
         k = k * p[i]
 
     return z, p, k
-
 
 def setMaxQ(maxQ, poles):
     for i in range(len(poles)):
@@ -458,7 +454,6 @@ def transforFilter (z,p,k,w, filter_type):
         return [[], [], 0]
     
     return z,p,k
-
 
 def denormFilter(z,p,k,wp,wa,Aa,denorm):
     w, h = signal.freqs_zpk(z, p, k, worN=np.logspace(np.log10(wp),np.log10(wa),10000))

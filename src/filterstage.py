@@ -1,4 +1,3 @@
-#from src.filterdesign import *
 from scipy import signal
 
 class FilterStage:
@@ -17,7 +16,7 @@ class FilterStage:
     def getPoles(self):
         return self.pole1, self.pole2
 
-    def getLabel(self, filterdesign):
+    def getLabel(self, filterdesign, name):
         pole_text = ''
         zero_text = ''
         if self.pole1 < 0:
@@ -52,7 +51,7 @@ class FilterStage:
         num_text = 'Numerador = [{}]\n'.format(rightnum)
         denom_text = ' Denominador = [{}]\n'.format(rightdenom)
 
-        return '{}{} Ganancia = {:.3f} dB\n Q = {:.3f}\n {}{}'.format(pole_text, zero_text, self.gain, self.Q, num_text, denom_text)
+        return '{}\n{}{} Ganancia = {:.3f} dB\n Q = {:.3f}\n {}{}'.format(name, pole_text, zero_text, self.gain, self.Q, num_text, denom_text)
 
     def __str__(self):
         return '{}\n{}\n{}\n{}\n{}\n{}\n'.format(self.pole1, self.pole2, self.zero1, self.zero2, self.gain, self.Q)

@@ -147,12 +147,12 @@
               </item>
               <item>
                <property name="text">
-                <string>Chebyshev</string>
+                <string>Chebyshev I</string>
                </property>
               </item>
               <item>
                <property name="text">
-                <string>Chebyshev Inverso</string>
+                <string>Chebyshev II</string>
                </property>
               </item>
               <item>
