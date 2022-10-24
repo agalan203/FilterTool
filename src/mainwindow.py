@@ -175,7 +175,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     self.spin_wp_2.setValue(self.filters[len(self.filters)-1].designconfig.wp2 / (2*pi))
                     self.spin_wa_2.setValue(self.filters[len(self.filters)-1].designconfig.wa2 / (2*pi))
                     self.GD_tau.setValue(self.filters[len(self.filters)-1].designconfig.tau)
-                    self.GD_wrg.setValue(self.filters[len(self.filters)-1].designconfig.wrg)
+                    self.GD_wrg.setValue(self.filters[len(self.filters)-1].designconfig.wrg / (2*pi))
                     self.GD_gamma.setValue(self.filters[len(self.filters)-1].designconfig.gamma)
 
                     self.updateFilterList()
@@ -292,24 +292,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def updateAprox(self):
         return
 
-    def updateDesignConfig(self):
-        self.designconfig.setType(self.combo_tipo.currentText())
-        self.designconfig.setAprox(self.combo_aprox.currentText())
-        self.designconfig.denorm = self.spin_denorm.value()
-        self.designconfig.minord = self.spin_minord.value()
-        self.designconfig.maxord = self.spin_maxord.value()
-        self.designconfig.qmax = self.spin_qmax.value()
-        self.designconfig.Ap = self.spin_Ap.value()
-        self.designconfig.ripple = self.spin_ripple.value()
-        self.designconfig.Aa = self.spin_Aa.value()
-        self.designconfig.wp = self.spin_wp.value() * 2 * pi
-        self.designconfig.wa = self.spin_wa.value() * 2 * pi
-        self.designconfig.wp2 = self.spin_wp_2.value() * 2 * pi
-        self.designconfig.wa2 = self.spin_wa_2.value() * 2 * pi
-        self.designconfig.tau = self.GD_tau.value()
-        self.designconfig.wrg = self.GD_wrg.value() * 2 * pi
-        self.designconfig.gamma = self.GD_gamma.value()
-
     def plotAll(self):
         for x, ax in enumerate(self.axes):
             ax.clear()
@@ -381,7 +363,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     self.combo_polo2.clear()
                     self.combo_cero1.clear()
                     self.combo_cero2.clear()
-                    self.combo_polo1.addItem('-')
+                    self.combo_polo1.addItem('-') 
                     self.combo_polo2.addItem('-')
                     self.combo_cero1.addItem('-')
                     self.combo_cero2.addItem('-')
@@ -433,6 +415,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.axes2[x].legend()
             self.figure2[x].tight_layout()
             canv.draw()
+        
+        self.updateStageMenu()
         
 
     def plotTemplate(self, type, Ap, ripple, Aa, wp, wa, wp2, wa2, tau, gamma, wrg):
@@ -708,26 +692,27 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def plotStage(self):
         selection = self.stage_list.selectedItems()
         if len(selection) > 0:
+            indice = self.combo_filtro.currentIndex() 
             index = self.stage_list.row(selection[0])
-            stage = self.filters[index].filter_stages[self.stage_list.item(index).text()]
+            stage = self.filters[indice].filter_stages[self.stage_list.item(index).text()]
             poles = []
             zeros = []
             if stage.pole1 >= 0:
-                poles.append(self.filters[index].filter_design.poles[stage.pole1])
+                poles.append(self.filters[indice].filter_design.poles[stage.pole1])
             if stage.pole2 >= 0:
-                poles.append(self.filters[index].filter_design.poles[stage.pole2])
+                poles.append(self.filters[indice].filter_design.poles[stage.pole2])
 
             if stage.zero1 >= 0:
-                zeros.append(self.filters[index].filter_design.zeros[stage.zero1])
+                zeros.append(self.filters[indice].filter_design.zeros[stage.zero1])
             if stage.zero2 >= 0:
-                zeros.append(self.filters[index].filter_design.zeros[stage.zero2])
+                zeros.append(self.filters[indice].filter_design.zeros[stage.zero2])
 
             Gain = signal.bode(signal.ZerosPolesGain(zeros, poles, 10**(stage.gain/20)))
             freq = Gain[0] / (2* pi)
 
             self.getPlotAxes('Respuesta Etapa').clear()
             self.getPlotAxes('Respuesta Etapa').grid()
-            self.getPlotAxes('Respuesta Etapa').semilogx(freq, Gain[1], label = self.filters[index].designconfig.name)
+            self.getPlotAxes('Respuesta Etapa').semilogx(freq, Gain[1], label = self.filters[indice].designconfig.name)
             self.axes2[2].set_xlabel('Frecuencia [Hz]')
             self.axes2[2].set_ylabel('Amplitud [dB]')
             self.axes2[2].legend()
@@ -742,19 +727,19 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             msg.exec_()
             return False
 
-    def deleteStage(self): #OJO ACA CON INDEX-> cuidado cuando cambia la seleccion deberia cambiar todo
-        index = self.combo_filtro.currentIndex()
+    def deleteStage(self): #TODO verificar que solo se pueda editar un filtro por vez
+        indice = self.combo_filtro.currentIndex()
         selection = self.stage_list.selectedItems()
         if len(selection) > 0:
             index = self.stage_list.row(selection[0])
-            old_stage = self.filters[index].filter_stages[self.stage_list.takeItem(index).text()]
+            old_stage = self.filters[indice].filter_stages[self.stage_list.takeItem(index).text()]
             pole1 = old_stage.pole1
             pole2 = old_stage.pole2
             zero1 = old_stage.zero1
             zero2 = old_stage.zero2
             gain = old_stage.gain
-            self.filters[index].gain_remaining += gain
-            self.label_gain_total.setText('Restante: {:.3f} dB'.format(self.filters[index].gain_remaining))
+            self.filters[indice].gain_remaining += gain
+            self.label_gain_total.setText('Restante: {:.3f} dB'.format(self.filters[indice].gain_remaining))
             if pole1 >= 0:
                 self.combo_polo1.model().item(pole1 + 1).setEnabled(True)
                 self.combo_polo2.model().item(pole1 + 1).setEnabled(True)
@@ -840,7 +825,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
             filter_types = ['Pasa Bajos', 'Pasa Altos', 'Pasa Banda', 'Rechaza Banda', 'Retardo de Grupo']
         
-            self.filters.append(Filter(designconfig = DesignConfig(name, filter_types.index(type), aprox, denorm, minord, maxord, qmax, Ap, ripple, Aa, wp, wa, wp2, wa2, tau, wrg, gamma)))
+            self.filters.append(Filter(designconfig = DesignConfig(name, filter_types.index(type), aprox, denorm, minord, maxord, qmax, Ap, ripple, Aa, wp, wa, wp2, wa2, tau, wrg, gamma), filter_design = FilterDesign()))
             self.updateFilterList()
             self.plotAll()
         except:

@@ -58,7 +58,6 @@ class FilterDesign:
 
                     
     def open(self, filename):
-        aprox_types = ['Butterworth', 'Chebyshev I', 'Chebyshev II', 'Bessel', 'Cauer', 'Legendre', 'Gauss']
         with open(filename, "r") as f:
             name = os.path.splitext(os.path.basename(filename))[0]
             lines = f.readlines()
