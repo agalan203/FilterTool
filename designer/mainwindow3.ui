@@ -257,30 +257,173 @@
            </layout>
           </item>
           <item>
-           <layout class="QGridLayout" name="plantillalayout" rowstretch="1,1,1,1,1,1,1,1,1,1,1,1,0,0">
-            <item row="8" column="1">
-             <widget class="QDoubleSpinBox" name="GD_tau">
+           <layout class="QGridLayout" name="plantillalayout" rowstretch="1,0,0,0,0,0,0,0,0,0,0,0,0,0">
+            <item row="4" column="1">
+             <widget class="QDoubleSpinBox" name="spin_wp">
               <property name="decimals">
-               <number>9</number>
+               <number>3</number>
               </property>
               <property name="minimum">
                <double>0.000000000000000</double>
               </property>
               <property name="maximum">
-               <double>100.000000000000000</double>
-              </property>
-              <property name="singleStep">
-               <double>0.000100000000000</double>
+               <double>10000000000000000.000000000000000</double>
               </property>
               <property name="value">
                <double>1.000000000000000</double>
               </property>
              </widget>
             </item>
-            <item row="4" column="0">
-             <widget class="QLabel" name="label_wp">
+            <item row="3" column="1">
+             <widget class="QDoubleSpinBox" name="spin_Aa">
+              <property name="decimals">
+               <number>3</number>
+              </property>
+              <property name="minimum">
+               <double>-300.000000000000000</double>
+              </property>
+              <property name="maximum">
+               <double>300.000000000000000</double>
+              </property>
+              <property name="value">
+               <double>1.000000000000000</double>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="label_Ap">
               <property name="text">
-               <string>Frecuencia fp [Hz]</string>
+               <string>Banda de Paso (Ap) [dB]</string>
+              </property>
+             </widget>
+            </item>
+            <item row="5" column="1">
+             <widget class="QDoubleSpinBox" name="spin_wp_2">
+              <property name="decimals">
+               <number>3</number>
+              </property>
+              <property name="minimum">
+               <double>0.000000000000000</double>
+              </property>
+              <property name="maximum">
+               <double>10000000000000000.000000000000000</double>
+              </property>
+              <property name="value">
+               <double>1.000000000000000</double>
+              </property>
+             </widget>
+            </item>
+            <item row="6" column="1">
+             <widget class="QDoubleSpinBox" name="spin_wa">
+              <property name="decimals">
+               <number>3</number>
+              </property>
+              <property name="minimum">
+               <double>0.000000000000000</double>
+              </property>
+              <property name="maximum">
+               <double>10000000000000000.000000000000000</double>
+              </property>
+              <property name="value">
+               <double>1.000000000000000</double>
+              </property>
+             </widget>
+            </item>
+            <item row="7" column="1">
+             <widget class="QDoubleSpinBox" name="spin_wa_2">
+              <property name="decimals">
+               <number>3</number>
+              </property>
+              <property name="minimum">
+               <double>0.000000000000000</double>
+              </property>
+              <property name="maximum">
+               <double>10000000000000000.000000000000000</double>
+              </property>
+              <property name="value">
+               <double>1.000000000000000</double>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0" colspan="2">
+             <widget class="QLabel" name="label_plantilla">
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+                <underline>true</underline>
+               </font>
+              </property>
+              <property name="text">
+               <string>Plantilla</string>
+              </property>
+             </widget>
+            </item>
+            <item row="7" column="0">
+             <widget class="QLabel" name="label_wa_2">
+              <property name="text">
+               <string>Frecuencia fa- [Hz]</string>
+              </property>
+             </widget>
+            </item>
+            <item row="11" column="1">
+             <widget class="QCheckBox" name="check_plantilla_GD">
+              <property name="text">
+               <string/>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="9" column="0">
+             <widget class="QLabel" name="label_wrg">
+              <property name="text">
+               <string>Frecuencia fRG  [Hz]</string>
+              </property>
+             </widget>
+            </item>
+            <item row="9" column="1">
+             <widget class="QDoubleSpinBox" name="GD_wrg">
+              <property name="decimals">
+               <number>3</number>
+              </property>
+              <property name="maximum">
+               <double>1000000000.000000000000000</double>
+              </property>
+              <property name="singleStep">
+               <double>1.000000000000000</double>
+              </property>
+              <property name="value">
+               <double>1.000000000000000</double>
+              </property>
+             </widget>
+            </item>
+            <item row="11" column="0">
+             <widget class="QLabel" name="label_check_plantilla">
+              <property name="text">
+               <string>Ver Plantilla</string>
+              </property>
+             </widget>
+            </item>
+            <item row="10" column="0">
+             <widget class="QLabel" name="label_gamma">
+              <property name="text">
+               <string>Error de retardo en fRG (𝛾%)</string>
+              </property>
+             </widget>
+            </item>
+            <item row="8" column="0">
+             <widget class="QLabel" name="label_tau">
+              <property name="text">
+               <string>Retardo en Banda de Paso [s]</string>
+              </property>
+             </widget>
+            </item>
+            <item row="13" column="1">
+             <widget class="QPushButton" name="remove_filter">
+              <property name="text">
+               <string>Eliminar</string>
               </property>
              </widget>
             </item>
@@ -354,172 +497,29 @@
               </property>
              </widget>
             </item>
-            <item row="1" column="0">
-             <widget class="QLabel" name="label_Ap">
-              <property name="text">
-               <string>Banda de Paso (Ap) [dB]</string>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="1">
-             <widget class="QDoubleSpinBox" name="spin_Aa">
+            <item row="8" column="1">
+             <widget class="QDoubleSpinBox" name="GD_tau">
               <property name="decimals">
-               <number>3</number>
-              </property>
-              <property name="minimum">
-               <double>-300.000000000000000</double>
-              </property>
-              <property name="maximum">
-               <double>300.000000000000000</double>
-              </property>
-              <property name="value">
-               <double>1.000000000000000</double>
-              </property>
-             </widget>
-            </item>
-            <item row="4" column="1">
-             <widget class="QDoubleSpinBox" name="spin_wp">
-              <property name="decimals">
-               <number>3</number>
+               <number>9</number>
               </property>
               <property name="minimum">
                <double>0.000000000000000</double>
               </property>
               <property name="maximum">
-               <double>10000000000000000.000000000000000</double>
-              </property>
-              <property name="value">
-               <double>1.000000000000000</double>
-              </property>
-             </widget>
-            </item>
-            <item row="5" column="1">
-             <widget class="QDoubleSpinBox" name="spin_wp_2">
-              <property name="decimals">
-               <number>3</number>
-              </property>
-              <property name="minimum">
-               <double>0.000000000000000</double>
-              </property>
-              <property name="maximum">
-               <double>10000000000000000.000000000000000</double>
-              </property>
-              <property name="value">
-               <double>1.000000000000000</double>
-              </property>
-             </widget>
-            </item>
-            <item row="6" column="1">
-             <widget class="QDoubleSpinBox" name="spin_wa">
-              <property name="decimals">
-               <number>3</number>
-              </property>
-              <property name="minimum">
-               <double>0.000000000000000</double>
-              </property>
-              <property name="maximum">
-               <double>10000000000000000.000000000000000</double>
-              </property>
-              <property name="value">
-               <double>1.000000000000000</double>
-              </property>
-             </widget>
-            </item>
-            <item row="7" column="1">
-             <widget class="QDoubleSpinBox" name="spin_wa_2">
-              <property name="decimals">
-               <number>3</number>
-              </property>
-              <property name="minimum">
-               <double>0.000000000000000</double>
-              </property>
-              <property name="maximum">
-               <double>10000000000000000.000000000000000</double>
-              </property>
-              <property name="value">
-               <double>1.000000000000000</double>
-              </property>
-             </widget>
-            </item>
-            <item row="11" column="1">
-             <widget class="QCheckBox" name="check_plantilla_GD">
-              <property name="text">
-               <string/>
-              </property>
-              <property name="checked">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="0" colspan="2">
-             <widget class="QLabel" name="label_plantilla">
-              <property name="font">
-               <font>
-                <weight>75</weight>
-                <bold>true</bold>
-                <underline>true</underline>
-               </font>
-              </property>
-              <property name="text">
-               <string>Plantilla</string>
-              </property>
-             </widget>
-            </item>
-            <item row="7" column="0">
-             <widget class="QLabel" name="label_wa_2">
-              <property name="text">
-               <string>Frecuencia fa- [Hz]</string>
-              </property>
-             </widget>
-            </item>
-            <item row="10" column="0">
-             <widget class="QLabel" name="label_gamma">
-              <property name="text">
-               <string>Error de retardo en fRG (𝛾%)</string>
-              </property>
-             </widget>
-            </item>
-            <item row="11" column="0">
-             <widget class="QLabel" name="label_check_plantilla">
-              <property name="text">
-               <string>Ver Plantilla</string>
-              </property>
-             </widget>
-            </item>
-            <item row="9" column="0">
-             <widget class="QLabel" name="label_wrg">
-              <property name="text">
-               <string>Frecuencia fRG  [Hz]</string>
-              </property>
-             </widget>
-            </item>
-            <item row="8" column="0">
-             <widget class="QLabel" name="label_tau">
-              <property name="text">
-               <string>Retardo en Banda de Paso [s]</string>
-              </property>
-             </widget>
-            </item>
-            <item row="9" column="1">
-             <widget class="QDoubleSpinBox" name="GD_wrg">
-              <property name="decimals">
-               <number>3</number>
-              </property>
-              <property name="maximum">
-               <double>1000000000.000000000000000</double>
+               <double>100.000000000000000</double>
               </property>
               <property name="singleStep">
-               <double>1.000000000000000</double>
+               <double>0.000100000000000</double>
               </property>
               <property name="value">
                <double>1.000000000000000</double>
               </property>
              </widget>
             </item>
-            <item row="13" column="1">
-             <widget class="QPushButton" name="remove_filter">
+            <item row="4" column="0">
+             <widget class="QLabel" name="label_wp">
               <property name="text">
-               <string>Eliminar</string>
+               <string>Frecuencia fp [Hz]</string>
               </property>
              </widget>
             </item>
@@ -530,8 +530,15 @@
               </property>
              </widget>
             </item>
-            <item row="12" column="0" colspan="2">
+            <item row="12" column="0">
              <widget class="QListWidget" name="filters_list"/>
+            </item>
+            <item row="12" column="1">
+             <widget class="QLabel" name="label_imagefilter">
+              <property name="text">
+               <string/>
+              </property>
+             </widget>
             </item>
            </layout>
           </item>

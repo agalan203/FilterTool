@@ -1,4 +1,4 @@
-from src.ui.mainwindow2 import *
+from src.ui.mainwindow3 import *
 import numpy as np
 from numpy import linspace, logspace, cos, sin, heaviside, log10, floor, zeros, ones, pi, diff, unwrap
 import sys
@@ -8,6 +8,7 @@ from PyQt5.QtWidgets import QMainWindow, QFileDialog, QApplication, QWidget, QPu
     QMessageBox, QRadioButton, QInputDialog
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import pyqtSlot
+from PyQt5.QtGui import QPixmap
 
 import scipy.signal as signal
 
@@ -33,8 +34,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.tabPlots.setCurrentIndex(0)
         self.tabPlots_2.setCurrentIndex(0)
 
+        self.filterImagen = [ "res/lowpasstemplate.png", "res/highpasstemplate.png",
+                    "res/bandpasstemplate.png", "res/bandstoptemplate.png", "res/groupdelaytemplate.png" ]
+
         #Updates
-        self.updateType()
+        self.updateType(self.filterImagen)
         self.updateAprox()
 
         #Variables
@@ -44,7 +48,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                              self.plotlayout_5, self.plotlayout_6]
         self.num_plots2 = self.tabPlots_2.count()
         self.plot_layouts2 = [self.plotlayout2_1, self.plotlayout2_2, self.plotlayout2_3]
-
+        
         #Callbacks
         #Save and recall
         self.btn_save.clicked.connect(self.saveFile)
@@ -52,8 +56,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.btn_save_2.clicked.connect(self.exportFile)
 
         #Filter design
-        self.btn_plot.clicked.connect(lambda: self.plotAll)
-        self.combo_tipo.currentIndexChanged.connect(self.updateType)
+        self.combo_tipo.currentIndexChanged.connect(lambda: self.updateType(self.filterImagen))
         self.combo_aprox.currentIndexChanged.connect(self.updateAprox)
         self.add_filter.clicked.connect(self.addFilter)
         self.remove_filter.clicked.connect(self.removeFilter)
@@ -271,7 +274,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.spin_wa_2.setEnabled(False)
         return
 
-    def updateType(self):
+    def updateType(self, filterImg):
+        self.label_imagefilter.setPixmap(QPixmap(filterImg[self.combo_tipo.currentIndex()]))
         type = self.combo_tipo.currentText()
         w_band = (type == 'Pasa Banda') or (type == 'Rechaza Banda')
         g_delay = type == 'Retardo de Grupo'
@@ -429,73 +433,93 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 yR = [Ap-ripple, Ap-ripple]
             else:
                 yR = [ripple, ripple]
-            self.axes[0].semilogx(x, y, '-', color='#28658a', linewidth=2)
-            self.axes[0].semilogx(x[:-1], yR, '-', color='#28658a', linewidth=2)
-            self.axes[0].fill_between(x, y, np.max(y), facecolor='#588aa8', alpha=0.5, edgecolor='#539ecd', linewidth=0)
+            self.axes[0].semilogx(x, y, '-', color='#1a6125', linewidth=2)
+            self.axes[0].semilogx(x[:-1], yR, '-', color='#1a6125', linewidth=2)
+            self.axes[0].fill_between(x, y, np.max(y), facecolor='#7fb587', alpha=0.5, edgecolor='#3d6343', linewidth=0)
             x = [wa/ (2*pi), wa/ (2*pi), wa * 10/ (2*pi)]
             y = [Ap - 10, Aa, Aa]
-            self.axes[0].semilogx(x, y, '-', color='#28658a', linewidth=2)
-            self.axes[0].fill_between(x, y, np.min(y), facecolor='#588aa8', alpha=0.5, edgecolor='#539ecd', linewidth=0)
+            self.axes[0].semilogx(x, y, '-', color='#1a6125', linewidth=2)
+            self.axes[0].fill_between(x, y, np.min(y), facecolor='#7fb587', alpha=0.5, edgecolor='#3d6343', linewidth=0)
         elif signaltypes[type] == 'Pasa Altos':
             x = [wa / 10/ (2*pi), wa/ (2*pi), wa/ (2*pi)]
             y = [Aa, Aa, Ap - 10]
-            self.axes[0].semilogx(x, y, '-', color='#28658a', linewidth=2)
-            self.axes[0].fill_between(x, y, np.min(y), facecolor='#588aa8', alpha=0.5, edgecolor='#539ecd', linewidth=0)
+            self.axes[0].semilogx(x, y, '-', color='#1a6125', linewidth=2)
+            self.axes[0].fill_between(x, y, np.min(y), facecolor='#7fb587', alpha=0.5, edgecolor='#3d6343', linewidth=0)
             x = [wp/ (2*pi), wp/ (2*pi), wp * 10/ (2*pi)]
             y = [Aa + 10, Ap, Ap]
             if Ap <= 0:
                 yR = [Ap-ripple, Ap-ripple]
             else:
                 yR = [ripple, ripple]
-            self.axes[0].semilogx(x[1:], yR, '-', color='#28658a', linewidth=2)
-            self.axes[0].semilogx(x, y, '-', color='#28658a', linewidth=2)
-            self.axes[0].fill_between(x, y, np.max(y), facecolor='#588aa8', alpha=0.5, edgecolor='#539ecd', linewidth=0)
+            self.axes[0].semilogx(x[1:], yR, '-', color='#1a6125', linewidth=2)
+            self.axes[0].semilogx(x, y, '-', color='#1a6125', linewidth=2)
+            self.axes[0].fill_between(x, y, np.max(y), facecolor='#7fb587', alpha=0.5, edgecolor='#3d6343', linewidth=0)
         elif signaltypes[type] == 'Pasa Banda':
+            w = [[wp,wp2],[wa,wa2]]
+            f0 = np.sqrt(w[0][0]*w[0][1])
+            f0a = np.sqrt(w[1][0]*w[1][1])
+            if f0a > f0:
+                x = [f0**2/w[1][1]/ (2*pi), f0**2/w[1][1]/ (2*pi)]
+            elif f0a < f0:
+                x = [f0**2/w[1][0]/ (2*pi), f0**2/w[1][0]/ (2*pi)]
+            y = [Aa, Ap-10]
+            self.axes[0].semilogx(x, y, '-', color='#ad1d52', linewidth=2)
+
             x = [wa2 / 10/ (2*pi), wa2/ (2*pi), wa2/ (2*pi)]
             y = [Aa, Aa, Ap - 10]
-            self.axes[0].semilogx(x, y, '-', color='#28658a', linewidth=2)
-            self.axes[0].fill_between(x, y, np.min(y), facecolor='#588aa8', alpha=0.5, edgecolor='#539ecd', linewidth=0)
+            self.axes[0].semilogx(x, y, '-', color='#1a6125', linewidth=2)
+            self.axes[0].fill_between(x, y, np.min(y), facecolor='#7fb587', alpha=0.5, edgecolor='#3d6343', linewidth=0)
             x = [wp2/ (2*pi), wp2/ (2*pi), wp/ (2*pi), wp/ (2*pi)]
             y = [Aa + 10, Ap, Ap, Aa + 10]
             if Ap <= 0:
                 yR = [Ap-ripple, Ap-ripple]
             else:
                 yR = [ripple, ripple]
-            self.axes[0].semilogx(x[1:-1], yR, '-', color='#28658a', linewidth=2)
-            self.axes[0].semilogx(x, y, '-', color='#28658a', linewidth=2)
-            self.axes[0].fill_between(x, y, np.max(y), facecolor='#588aa8', alpha=0.5, edgecolor='#539ecd', linewidth=0)
+            self.axes[0].semilogx(x[1:-1], yR, '-', color='#1a6125', linewidth=2)
+            self.axes[0].semilogx(x, y, '-', color='#1a6125', linewidth=2)
+            self.axes[0].fill_between(x, y, np.max(y), facecolor='#7fb587', alpha=0.5, edgecolor='#3d6343', linewidth=0)
             x = [wa/ (2*pi), wa/ (2*pi), wa * 10/ (2*pi)]
             y = [Ap - 10, Aa, Aa]
-            self.axes[0].semilogx(x, y, '-', color='#28658a', linewidth=2)
-            self.axes[0].fill_between(x, y, np.min(y), facecolor='#588aa8', alpha=0.5, edgecolor='#539ecd', linewidth=0)
+            self.axes[0].semilogx(x, y, '-', color='#1a6125', linewidth=2)
+            self.axes[0].fill_between(x, y, np.min(y), facecolor='#7fb587', alpha=0.5, edgecolor='#3d6343', linewidth=0)
         elif signaltypes[type] == 'Rechaza Banda':
+            w = [[wp,wp2],[wa,wa2]]
+            f0 = np.sqrt(w[0][0]*w[0][1])
+            f0a = np.sqrt(w[1][0]*w[1][1])
+            if f0a > f0:
+                x = [f0**2/w[1][0] / (2*pi), f0**2/w[1][0] / (2*pi)]
+            elif f0a < f0:
+                x = [f0**2/w[1][1] / (2*pi), f0**2/w[1][1] / (2*pi)]
+            y = [Aa, Ap-10]
+            self.axes[0].semilogx(x, y, '-', color='#ad1d52', linewidth=2)
+
             x = [wp2 / 10/ (2*pi), wp2/ (2*pi), wp2/ (2*pi)]
             y = [Ap, Ap, Aa + 10]
             if Ap <= 0:
                 yR = [Ap-ripple, Ap-ripple]
             else:
                 yR = [ripple, ripple]
-            self.axes[0].semilogx(x[:-1], yR, '-', color='#28658a', linewidth=2)
-            self.axes[0].semilogx(x, y, '-', color='#28658a', linewidth=2)
-            self.axes[0].fill_between(x, y, np.max(y), facecolor='#588aa8', alpha=0.5, edgecolor='#539ecd', linewidth=0)
+            self.axes[0].semilogx(x[:-1], yR, '-', color='#1a6125', linewidth=2)
+            self.axes[0].semilogx(x, y, '-', color='#1a6125', linewidth=2)
+            self.axes[0].fill_between(x, y, np.max(y), facecolor='#7fb587', alpha=0.5, edgecolor='#3d6343', linewidth=0)
             x = [wa2/ (2*pi), wa2/ (2*pi), wa/ (2*pi), wa/ (2*pi)]
             y = [Ap - 10, Aa, Aa, Ap - 10]
-            self.axes[0].semilogx(x, y, '-', color='#28658a', linewidth=2)
-            self.axes[0].fill_between(x, y, np.min(y), facecolor='#588aa8', alpha=0.5, edgecolor='#539ecd', linewidth=0)
+            self.axes[0].semilogx(x, y, '-', color='#1a6125', linewidth=2)
+            self.axes[0].fill_between(x, y, np.min(y), facecolor='#7fb587', alpha=0.5, edgecolor='#3d6343', linewidth=0)
             x = [wp/ (2*pi), wp/ (2*pi), wp * 10/ (2*pi)]
             y = [Aa + 10, Ap, Ap]
             if Ap <= 0:
                 yR = [Ap-ripple, Ap-ripple]
             else:
                 yR = [ripple, ripple]
-            self.axes[0].semilogx(x[1:], yR, '-', color='#28658a', linewidth=2)
-            self.axes[0].semilogx(x, y, '-', color='#28658a', linewidth=2)
-            self.axes[0].fill_between(x, y, np.max(y), facecolor='#588aa8', alpha=0.5, edgecolor='#539ecd', linewidth=0)
+            self.axes[0].semilogx(x[1:], yR, '-', color='#1a6125', linewidth=2)
+            self.axes[0].semilogx(x, y, '-', color='#1a6125', linewidth=2)
+            self.axes[0].fill_between(x, y, np.max(y), facecolor='#7fb587', alpha=0.5, edgecolor='#3d6343', linewidth=0)
         elif signaltypes[type] == 'Retardo de Grupo':
             x = [wrg/10/ (2*pi), wrg/ (2*pi), wrg/ (2*pi)]
             y = [tau - (tau * gamma/100), tau - (tau * gamma/100), 0]
-            self.getPlotAxes('Retardo de Grupo').semilogx(x, y, '-', color='#28658a', linewidth=2)
-            self.getPlotAxes('Retardo de Grupo').fill_between(x, y, np.min(y), facecolor='#588aa8', alpha=0.5, edgecolor='#539ecd', linewidth=0)
+            self.getPlotAxes('Retardo de Grupo').semilogx(x, y, '-', color='#1a6125', linewidth=2)
+            self.getPlotAxes('Retardo de Grupo').fill_between(x, y, np.min(y), facecolor='#7fb587', alpha=0.5, edgecolor='#3d6343', linewidth=0)
 
         return
 

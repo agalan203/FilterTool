@@ -163,45 +163,45 @@ class FilterDesign:
                     yR = [Ap - ripple, Ap - ripple]
                 else:
                     yR = [ripple, ripple]
-                plt.semilogx(x[:-1], yR, '-', color='#28658a', linewidth=2)
-                plt.semilogx(x, y, '-', color='#28658a', linewidth=2)
-                plt.fill_between(x, y, np.max(y), facecolor='#588aa8', alpha=0.5, edgecolor='#539ecd', linewidth=0)
+                plt.semilogx(x[:-1], yR, '-', color='#1a6125', linewidth=2)
+                plt.semilogx(x, y, '-', color='#1a6125', linewidth=2)
+                plt.fill_between(x, y, np.max(y), facecolor='#7fb587', alpha=0.5, edgecolor='#3d6343', linewidth=0)
                 x = [wa/ (2*pi), wa/ (2*pi), wa * 10/ (2*pi)]
                 y = [Ap - 10, Aa, Aa]
-                plt.semilogx(x, y, '-', color='#28658a', linewidth=2)
-                plt.fill_between(x, y, np.min(y), facecolor='#588aa8', alpha=0.5, edgecolor='#539ecd', linewidth=0)
+                plt.semilogx(x, y, '-', color='#1a6125', linewidth=2)
+                plt.fill_between(x, y, np.min(y), facecolor='#7fb587', alpha=0.5, edgecolor='#3d6343', linewidth=0)
             elif type == 'Pasa Altos':
                 x = [wa / 10/ (2*pi), wa/ (2*pi), wa/ (2*pi)]
                 y = [Aa, Aa, Ap - 10]
-                plt.semilogx(x, y, '-', color='#28658a', linewidth=2)
-                plt.fill_between(x, y, np.min(y), facecolor='#588aa8', alpha=0.5, edgecolor='#539ecd', linewidth=0)
+                plt.semilogx(x, y, '-', color='#1a6125', linewidth=2)
+                plt.fill_between(x, y, np.min(y), facecolor='#7fb587', alpha=0.5, edgecolor='#3d6343', linewidth=0)
                 x = [wp/ (2*pi), wp/ (2*pi), wp * 10/ (2*pi)]
                 y = [Aa + 10, Ap, Ap]
                 if Ap <= 0:
                     yR = [Ap - ripple, Ap - ripple]
                 else:
                     yR = [ripple, ripple]
-                plt.semilogx(x[1:], yR, '-', color='#28658a', linewidth=2)
-                plt.semilogx(x, y, '-', color='#28658a', linewidth=2)
-                plt.fill_between(x, y, np.max(y), facecolor='#588aa8', alpha=0.5, edgecolor='#539ecd', linewidth=0)
+                plt.semilogx(x[1:], yR, '-', color='#1a6125', linewidth=2)
+                plt.semilogx(x, y, '-', color='#1a6125', linewidth=2)
+                plt.fill_between(x, y, np.max(y), facecolor='#7fb587', alpha=0.5, edgecolor='#3d6343', linewidth=0)
             elif type == 'Pasa Banda':
                 x = [wa2 / 10/ (2*pi), wa2/ (2*pi), wa2/ (2*pi)]
                 y = [Aa, Aa, Ap - 10]
-                plt.semilogx(x, y, '-', color='#28658a', linewidth=2)
-                plt.fill_between(x, y, np.min(y), facecolor='#588aa8', alpha=0.5, edgecolor='#539ecd', linewidth=0)
+                plt.semilogx(x, y, '-', color='#1a6125', linewidth=2)
+                plt.fill_between(x, y, np.min(y), facecolor='#7fb587', alpha=0.5, edgecolor='#3d6343', linewidth=0)
                 x = [wp2/ (2*pi), wp2/ (2*pi), wp/ (2*pi), wp/ (2*pi)]
                 y = [Aa + 10, Ap, Ap, Aa + 10]
                 if Ap <= 0:
                     yR = [Ap - ripple, Ap - ripple]
                 else:
                     yR = [ripple, ripple]
-                plt.semilogx(x[1:-1], yR, '-', color='#28658a', linewidth=2)
-                plt.semilogx(x, y, '-', color='#28658a', linewidth=2)
-                plt.fill_between(x, y, np.max(y), facecolor='#588aa8', alpha=0.5, edgecolor='#539ecd', linewidth=0)
+                plt.semilogx(x[1:-1], yR, '-', color='#1a6125', linewidth=2)
+                plt.semilogx(x, y, '-', color='#1a6125', linewidth=2)
+                plt.fill_between(x, y, np.max(y), facecolor='#7fb587', alpha=0.5, edgecolor='#3d6343', linewidth=0)
                 x = [wa/ (2*pi), wa/ (2*pi), wa * 10/ (2*pi)]
                 y = [Ap - 10, Aa, Aa]
-                plt.semilogx(x, y, '-', color='#28658a', linewidth=2)
-                plt.fill_between(x, y, np.min(y), facecolor='#588aa8', alpha=0.5, edgecolor='#539ecd', linewidth=0)
+                plt.semilogx(x, y, '-', color='#1a6125', linewidth=2)
+                plt.fill_between(x, y, np.min(y), facecolor='#7fb587', alpha=0.5, edgecolor='#3d6343', linewidth=0)
             elif type == 'Rechaza Banda':
                 x = [wp2 / 10/ (2*pi), wp2/ (2*pi), wp2/ (2*pi)]
                 y = [Ap, Ap, Aa + 10]
@@ -209,22 +209,22 @@ class FilterDesign:
                     yR = [Ap - ripple, Ap - ripple]
                 else:
                     yR = [ripple, ripple]
-                plt.semilogx(x[:-1], yR, '-', color='#28658a', linewidth=2)
-                plt.semilogx(x, y, '-', color='#28658a', linewidth=2)
-                plt.fill_between(x, y, np.max(y), facecolor='#588aa8', alpha=0.5, edgecolor='#539ecd', linewidth=0)
+                plt.semilogx(x[:-1], yR, '-', color='#1a6125', linewidth=2)
+                plt.semilogx(x, y, '-', color='#1a6125', linewidth=2)
+                plt.fill_between(x, y, np.max(y), facecolor='#7fb587', alpha=0.5, edgecolor='#3d6343', linewidth=0)
                 x = [wa2/ (2*pi), wa2/ (2*pi), wa/ (2*pi), wa/ (2*pi)]
                 y = [Ap - 10, Aa, Aa, Ap - 10]
-                plt.semilogx(x, y, '-', color='#28658a', linewidth=2)
-                plt.fill_between(x, y, np.min(y), facecolor='#588aa8', alpha=0.5, edgecolor='#539ecd', linewidth=0)
+                plt.semilogx(x, y, '-', color='#1a6125', linewidth=2)
+                plt.fill_between(x, y, np.min(y), facecolor='#7fb587', alpha=0.5, edgecolor='#3d6343', linewidth=0)
                 x = [wp/ (2*pi), wp/ (2*pi), wp * 10/ (2*pi)]
                 y = [Aa + 10, Ap, Ap]
                 if Ap <= 0:
                     yR = [Ap - ripple, Ap - ripple]
                 else:
                     yR = [ripple, ripple]
-                plt.semilogx(x[1:], yR, '-', color='#28658a', linewidth=2)
-                plt.semilogx(x, y, '-', color='#28658a', linewidth=2)
-                plt.fill_between(x, y, np.max(y), facecolor='#588aa8', alpha=0.5, edgecolor='#539ecd', linewidth=0)
+                plt.semilogx(x[1:], yR, '-', color='#1a6125', linewidth=2)
+                plt.semilogx(x, y, '-', color='#1a6125', linewidth=2)
+                plt.fill_between(x, y, np.max(y), facecolor='#7fb587', alpha=0.5, edgecolor='#3d6343', linewidth=0)
 
             # Calcular aproximación
             if aprox == 'Butterworth':
@@ -300,8 +300,8 @@ class FilterDesign:
             if aprox == 'Bessel' or aprox == 'Gauss':
                 x = [wrg / 10, wrg, wrg]
                 y = [tau - (tau * gamma / 100), tau - (tau * gamma / 100), 0]
-                plt.semilogx(x, y, '-', color='#28658a', linewidth=2)
-                plt.fill_between(x, y, np.min(y), facecolor='#588aa8', alpha=0.5, edgecolor='#539ecd', linewidth=0)
+                plt.semilogx(x, y, '-', color='#1a6125', linewidth=2)
+                plt.fill_between(x, y, np.min(y), facecolor='#7fb587', alpha=0.5, edgecolor='#3d6343', linewidth=0)
             plt.title('Retardo de Grupo')
             plt.xlabel('Frecuencia [rad/s]')
             plt.ylabel('Tiempo [s]')
