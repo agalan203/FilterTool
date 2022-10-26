@@ -50,6 +50,8 @@ class FilterStage:
         if not zeros or H.num[len(H.num)-1]:
                 a,b = signal.normalize(H.num, H.den)
                 H = signal.TransferFunction(a/a[-1],b/b[-1])
+        elif not H.num[len(H.num)-1] and len(H.num) == 2:
+                H.num = H.num * H.den[1]
 
         H.num = H.num * 10**(self.gain/20)
 
