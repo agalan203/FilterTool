@@ -44,10 +44,15 @@ class FilterStage:
             zeros.append(filterdesign.zeros[self.zero1])
         if self.zero2 >= 0:
             zeros.append(filterdesign.zeros[self.zero2])
+        
+        zpg = signal.ZerosPolesGain(zeros,poles,1)
+        H = signal.TransferFunction(zpg)
+        a,b = signal.normalize(H.num, H.den)
+        H = signal.TransferFunction(a/a[-1],b/b[-1])
+        H.num = H.num * 10**(self.gain/20)
 
-        num, denom = signal.zpk2tf(zeros, poles, 10**(filterdesign.gain/20))
-        rightnum = ",".join((map("{:.3f}".format, num)))
-        rightdenom = ",".join(map("{:.3f}".format, denom))
+        rightnum = ",".join((map("{:.3f}".format, H.num)))
+        rightdenom = ",".join(map("{:.3f}".format, H.den))
         num_text = 'Numerador = [{}]\n'.format(rightnum)
         denom_text = ' Denominador = [{}]\n'.format(rightdenom)
 

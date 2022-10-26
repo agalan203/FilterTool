@@ -6,6 +6,3 @@ if __name__ == "__main__":
     window.show()
     app.exec_()
 
-    #maybe agrega lo de las imagenes de la plantilla de cada filtro
-    #ver pq tarda tanto 
-

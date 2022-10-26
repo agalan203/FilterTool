@@ -333,6 +333,8 @@ class Ui_MainWindow(object):
         self.layout_etapas.addWidget(self.label_polo2, 4, 0, 1, 1)
         self.spin_gain = QtWidgets.QDoubleSpinBox(self.tab_stagedesign)
         self.spin_gain.setObjectName("spin_gain")
+        self.spin_gain.setMinimum(-300.0)
+        self.spin_gain.setMaximum(300.0)
         self.layout_etapas.addWidget(self.spin_gain, 2, 1, 1, 1)
         self.label_polo1 = QtWidgets.QLabel(self.tab_stagedesign)
         self.label_polo1.setObjectName("label_polo1")

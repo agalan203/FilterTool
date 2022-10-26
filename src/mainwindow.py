@@ -34,8 +34,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.tabPlots.setCurrentIndex(0)
         self.tabPlots_2.setCurrentIndex(0)
 
-        self.filterImagen = [ "res/lowpasstemplate.png", "res/highpasstemplate.png",
-                    "res/bandpasstemplate.png", "res/bandstoptemplate.png", "res/groupdelaytemplate.png" ]
+        self.filterImagen = [ resource_path("res/lowpasstemplate.png"), resource_path("res/highpasstemplate.png"),
+                    resource_path("res/bandpasstemplate.png"), resource_path("res/bandstoptemplate.png"), resource_path("res/groupdelaytemplate.png") ]
 
         #Updates
         self.updateType(self.filterImagen)
@@ -731,7 +731,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             if stage.zero2 >= 0:
                 zeros.append(self.filters[indice].filter_design.zeros[stage.zero2])
 
-            Gain = signal.bode(signal.ZerosPolesGain(zeros, poles, 10**(stage.gain/20)))
+            zpg = signal.ZerosPolesGain(zeros,poles,1)
+            H = signal.TransferFunction(zpg)
+            a,b = signal.normalize(H.num, H.den)
+            H = signal.TransferFunction(a/a[-1],b/b[-1])
+            H.num = H.num * 10**(stage.gain/20)
+            Gain = signal.bode(H)
+            
             freq = Gain[0] / (2* pi)
 
             self.getPlotAxes('Respuesta Etapa').clear()
@@ -751,7 +757,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             msg.exec_()
             return False
 
-    def deleteStage(self): #TODO verificar que solo se pueda editar un filtro por vez
+    def deleteStage(self):
         indice = self.combo_filtro.currentIndex()
         selection = self.stage_list.selectedItems()
         if len(selection) > 0:
@@ -930,3 +936,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         selected = self.filters_list.selectedItems()
         index = self.filters_list.row(selected[0])
         self.label_writeorden.setText(str(self.filters[index].orden))
+
+def resource_path(relative_path):
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
