@@ -62,6 +62,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.remove_filter.clicked.connect(self.removeFilter)
         self.filters_list.itemChanged.connect(self.onFilterItemChanged)
         self.filters_list.itemDoubleClicked.connect(self.writeOrden)
+        self.check_plantilla_GD.stateChanged.connect(self.plotAll)
 
         #Stage design
         self.btn_new_stage.clicked.connect(self.newStage)
@@ -93,7 +94,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.axes[2].set_xscale('log')
         self.axes[0].set_xlabel('Frecuencia [Hz]')
         self.axes[1].set_xlabel('Frecuencia [Hz]')
-        self.axes[2].set_xlabel('Frecuencia [rad/s]')
+        self.axes[2].set_xlabel('Frecuencia [Hz]')
         self.axes[3].set_xlabel('σ')
         self.axes[4].set_xlabel('t [s]')
         self.axes[5].set_xlabel('σ')
@@ -393,7 +394,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         self.axes[0].set_xlabel('Frecuencia [Hz]')
         self.axes[1].set_xlabel('Frecuencia [Hz]')
-        self.axes[2].set_xlabel('Frecuencia [rad/s]')
+        self.axes[2].set_xlabel('Frecuencia [Hz]')
         self.axes[3].set_xlabel('σ')
         self.axes[4].set_xlabel('t [s]')
         self.axes[5].set_xlabel('σ')
@@ -621,6 +622,15 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             print(self.filters[index].filter_design.poles[pole1].real, self.filters[index].filter_design.poles[pole2].real)
             msg.setText("Los polos deben ser complejos conjugados.")
             msg.exec_()
+        elif zero1 >= 0 and zero2 >= 0 and not np.isclose(self.filters[index].filter_design.zeros[zero1].imag, -self.filters[index].filter_design.zeros[zero2].imag):
+            msg.setText("Los ceros deben ser complejos conjugados.")
+            msg.exec_()
+        elif (zero1 >= 0 and self.filters[index].filter_design.zeros[zero1].imag != 0 and zero2 < 0) or ( zero2 >= 0 and self.filters[index].filter_design.zeros[zero2].imag != 0 and zero1 < 0):
+            msg.setText("Los ceros deben ser complejos conjugados.")
+            msg.exec_()
+        elif ((zero1 >= 0 or zero2 >= 0) and (pole1 < 0 and pole2 < 0)) or ((zero1 >= 0 and zero2 >= 0) and (pole1 < 0 or pole2 < 0)):
+            msg.setText("Las etapas deben contener un número mayor o igual de polos que de ceros.")
+            msg.exec_()
         else:
             pole = None
             if pole1 >= 0:
@@ -733,8 +743,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
             zpg = signal.ZerosPolesGain(zeros,poles,1)
             H = signal.TransferFunction(zpg)
-            a,b = signal.normalize(H.num, H.den)
-            H = signal.TransferFunction(a/a[-1],b/b[-1])
             H.num = H.num * 10**(stage.gain/20)
             Gain = signal.bode(H)
             
@@ -853,11 +861,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     ax.clear()
                     ax.grid()
 
-            filter_types = ['Pasa Bajos', 'Pasa Altos', 'Pasa Banda', 'Rechaza Banda', 'Retardo de Grupo']
-        
-            self.filters.append(Filter(designconfig = DesignConfig(name, filter_types.index(type), aprox, denorm, minord, maxord, qmax, Ap, ripple, Aa, wp, wa, wp2, wa2, tau, wrg, gamma), filter_design = FilterDesign()))
-            self.updateFilterList()
-            self.plotAll()
+                filter_types = ['Pasa Bajos', 'Pasa Altos', 'Pasa Banda', 'Rechaza Banda', 'Retardo de Grupo']
+            
+                self.filters.append(Filter(designconfig = DesignConfig(name, filter_types.index(type), aprox, denorm, minord, maxord, qmax, Ap, ripple, Aa, wp, wa, wp2, wa2, tau, wrg, gamma), filter_design = FilterDesign()))
+                self.updateFilterList()
+                self.plotAll()
         except:
             msg = QMessageBox()
             msg.setIcon(QMessageBox.Warning)
@@ -929,7 +937,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         if self.filters:
             p = self.filters[self.combo_filtro.currentIndex()].filter_design.poles.copy()
             z = self.filters[self.combo_filtro.currentIndex()].filter_design.zeros.copy()
-
             self.plotPolesAndZeros(z,p, self.filters[self.combo_filtro.currentIndex()].designconfig.name)
 
     def writeOrden(self):

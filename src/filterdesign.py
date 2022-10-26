@@ -303,7 +303,7 @@ class FilterDesign:
                 plt.semilogx(x, y, '-', color='#1a6125', linewidth=2)
                 plt.fill_between(x, y, np.min(y), facecolor='#7fb587', alpha=0.5, edgecolor='#3d6343', linewidth=0)
             plt.title('Retardo de Grupo')
-            plt.xlabel('Frecuencia [rad/s]')
+            plt.xlabel('Frecuencia [Hz]')
             plt.ylabel('Tiempo [s]')
             plt.tight_layout()
             pdf.savefig()

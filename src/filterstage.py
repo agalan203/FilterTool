@@ -47,8 +47,6 @@ class FilterStage:
         
         zpg = signal.ZerosPolesGain(zeros,poles,1)
         H = signal.TransferFunction(zpg)
-        a,b = signal.normalize(H.num, H.den)
-        H = signal.TransferFunction(a/a[-1],b/b[-1])
         H.num = H.num * 10**(self.gain/20)
 
         rightnum = ",".join((map("{:.3f}".format, H.num)))
