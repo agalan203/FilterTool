@@ -619,7 +619,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             msg.setText("Seleccionar al menos un polo o un cero.")
             msg.exec_()
         elif pole1 >= 0 and pole2 >= 0 and not np.isclose(self.filters[index].filter_design.poles[pole1].real, self.filters[index].filter_design.poles[pole2].real):
-            print(self.filters[index].filter_design.poles[pole1].real, self.filters[index].filter_design.poles[pole2].real)
             msg.setText("Los polos deben ser complejos conjugados.")
             msg.exec_()
         elif zero1 >= 0 and zero2 >= 0 and not np.isclose(self.filters[index].filter_design.zeros[zero1].imag, -self.filters[index].filter_design.zeros[zero2].imag):
@@ -672,8 +671,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 self.btn_plot_stage.setEnabled(False)
                 self.btn_delete_stage.setEnabled(False)
                 self.stage_list.setEnabled(False)
-                index = self.filters[index].editingStageIndex
-                current_stage = self.filters[index].filter_stages[self.stage_list.item(index).text()]
+                indice = self.filters[index].editingStageIndex
+                current_stage = self.filters[index].filter_stages[self.stage_list.item(indice).text()]
                 pole1 = current_stage.pole1
                 pole2 = current_stage.pole2
                 zero1 = current_stage.zero1
@@ -715,9 +714,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 self.btn_delete_stage.setEnabled(True)
                 self.stage_list.setEnabled(True)
 
-                index = self.filters[index].editingStageIndex
-                del self.filters[index].filter_stages[self.stage_list.item(index).text()]
-                self.stage_list.item(index).setText(new_stage.getLabel(self.filters[index].filter_design, self.filters[index].designconfig.name))
+                indice = self.filters[index].editingStageIndex
+                del self.filters[index].filter_stages[self.stage_list.item(indice).text()]
+                self.stage_list.item(indice).setText(new_stage.getLabel(self.filters[index].filter_design, self.filters[index].designconfig.name))
                 self.filters[index].filter_stages[new_stage.getLabel(self.filters[index].filter_design, self.filters[index].designconfig.name)] = new_stage
                 return True
             else:
@@ -743,6 +742,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
             zpg = signal.ZerosPolesGain(zeros,poles,1)
             H = signal.TransferFunction(zpg)
+            if not zeros or H.num[len(H.num)-1]:
+                a,b = signal.normalize(H.num, H.den)
+                H = signal.TransferFunction(a/a[-1],b/b[-1])
+
             H.num = H.num * 10**(stage.gain/20)
             Gain = signal.bode(H)
             
